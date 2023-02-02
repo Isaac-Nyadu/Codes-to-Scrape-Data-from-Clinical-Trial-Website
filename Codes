@@ -15,8 +15,8 @@ soup = BeautifulSoup(page.text, "lxml")
 df = pd.DataFrame({"Study Title": [""], "American Indian or Alaska Native Number": [""], "American Indian or Alaska Native percentage": [""], "Asian Number": [""], "Asian Percentage": [""], "Native Hawaiian or Other Pacific Islander Number": [""],"Native Hawaiian or Other Pacific Islander Percentage": [""], "Black or African American Number": [""],"Black or African American Percentage": [""], "More than one race Number": [""], "More than one race Percentage": [""], "White Number": [""], "White Percentage": [""], "Unknown or Not Reported Number": [""], "Unknown or Not Reported Percentage": [""], "Country":[""], "Medical Facility" : [""]})
 
 count = 2
-#using loop to generate the data from the vaarious webpages 56684
-for i in range(3):
+#using loop to generate the data from the vaarious webpages 
+for i in range(56684):
     #Getting the study Title 
     title_find = soup.find("h1", class_ = "tr-h1 ct-sans-serif")
     if title_find is not None:
