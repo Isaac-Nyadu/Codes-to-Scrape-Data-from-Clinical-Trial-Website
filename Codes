@@ -15,8 +15,8 @@ soup = BeautifulSoup(page.text, "lxml")
 df = pd.DataFrame({"Study Title": [""], "American Indian or Alaska Native Number": [""], "American Indian or Alaska Native percentage": [""], "Asian Number": [""], "Asian Percentage": [""], "Native Hawaiian or Other Pacific Islander Number": [""],"Native Hawaiian or Other Pacific Islander Percentage": [""], "Black or African American Number": [""],"Black or African American Percentage": [""], "More than one race Number": [""], "More than one race Percentage": [""], "White Number": [""], "White Percentage": [""], "Unknown or Not Reported Number": [""], "Unknown or Not Reported Percentage": [""], "Country":[""], "Medical Facility" : [""]})
 
 count = 2
-#using loop to generate the data from the vaarious webpages
-for i in range(56684):
+#using loop to generate the data from the vaarious webpages 56684
+for i in range(3):
     #Getting the study Title 
     title_find = soup.find("h1", class_ = "tr-h1 ct-sans-serif")
     if title_find is not None:
@@ -159,8 +159,9 @@ for i in range(56684):
     soup = BeautifulSoup(page.text, 'lxml')
     
     #Updating the table
-    df = df.append({'Study Title': study_title, "American Indian or Alaska Native Number": American_Indian_Number, "American Indian or Alaska Native percentage": American_Indian_percentage, "Asian Number": Asian_Number, "Asian Percentage": Asian_Percentage, "Native Hawaiian or Other Pacific Islander Number": Native_Hawaiian_or_Other_Pacific_Islander_Number, "Native Hawaiian or Other Pacific Islander Percentage": Native_Hawaiian_or_Other_Pacific_Islander_Percentage, "Black or African American Number": Black_or_African_American_Number, "Black or African American Percentage": Black_or_African_American_Percentage, "More than one race Number": More_than_one_race_Number, "More than one race Percentage": More_than_one_race_Percentage, "White Number": White_Number, "White Percentage": White_Percentage, "Unknown or Not Reported Number": Unknown_or_Not_Reported_Number,  "Unknown or Not Reported Percentage": Unknown_or_Not_Reported_Percentage, 'Country': country, 'Medical Facility': medicalFacility}, ignore_index = True)
     
+    df_new_row = pd.DataFrame({'Study Title': [study_title], "American Indian or Alaska Native Number": [American_Indian_Number], "American Indian or Alaska Native percentage": [American_Indian_percentage], "Asian Number": [Asian_Number], "Asian Percentage": [Asian_Percentage], "Native Hawaiian or Other Pacific Islander Number": [Native_Hawaiian_or_Other_Pacific_Islander_Number], "Native Hawaiian or Other Pacific Islander Percentage": [Native_Hawaiian_or_Other_Pacific_Islander_Percentage], "Black or African American Number": [Black_or_African_American_Number], "Black or African American Percentage": [Black_or_African_American_Percentage], "More than one race Number": [More_than_one_race_Number], "More than one race Percentage": [More_than_one_race_Percentage], "White Number": [White_Number], "White Percentage": [White_Percentage], "Unknown or Not Reported Number": [Unknown_or_Not_Reported_Number],  "Unknown or Not Reported Percentage": [Unknown_or_Not_Reported_Percentage], 'Country': [country], 'Medical Facility': [medicalFacility]})
+    df = pd.concat([df, df_new_row])
     #Moving to the next webpage
     new_list = []
     next_link = soup.find('div', class_ = "tr-results-nav")
@@ -244,4 +245,6 @@ for i in range(56684):
 
 # converting the data generated to  
 
-df.to_clipboard("C:/Users/Owner/Desktop/Try4")
+df.to_clipboard("C:/Users/adjei/OneDrive/Desktop/df.csv", index = False)
+df.to_csv("C:/Users/adjei/OneDrive/Desktop/df.csv", index = False)
+
