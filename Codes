@@ -1,0 +1,247 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import random
+import time
+
+url = "https://clinicaltrials.gov/ct2/show/results/NCT05594173?rslt=With&draw=1&rank=1"
+next_page = "https://clinicaltrials.gov/ct2/show/results?rslt=With&draw=1&rank=2"
+
+page = requests.get(url)
+
+soup = BeautifulSoup(page.text, "lxml")
+
+#Table
+df = pd.DataFrame({"Study Title": [""], "American Indian or Alaska Native Number": [""], "American Indian or Alaska Native percentage": [""], "Asian Number": [""], "Asian Percentage": [""], "Native Hawaiian or Other Pacific Islander Number": [""],"Native Hawaiian or Other Pacific Islander Percentage": [""], "Black or African American Number": [""],"Black or African American Percentage": [""], "More than one race Number": [""], "More than one race Percentage": [""], "White Number": [""], "White Percentage": [""], "Unknown or Not Reported Number": [""], "Unknown or Not Reported Percentage": [""], "Country":[""], "Medical Facility" : [""]})
+
+count = 2
+#using loop to generate the data from the vaarious webpages
+for i in range(56684):
+    #Getting the study Title 
+    title_find = soup.find("h1", class_ = "tr-h1 ct-sans-serif")
+    if title_find is not None:
+        study_title = title_find.text
+    else:
+        study_title = None
+        
+    
+    
+    #Getting the race participants
+    dfa = soup.find('div', {'id': 'tab-body'})
+    if dfa is not None:
+        dfak = dfa.find('div', class_ = 'tr-indent2')
+        if dfak is not None:
+            dfak1 = dfak.find('div', {'style': 'padding-top:1em; margin-top:1em'})
+            if dfak1 is not None:
+                dfak2 = dfak1.find('div', class_ = 'tr-indent2')
+                if dfak2 is not None:
+                    dfak3 = dfak2.find_all('td') 
+                else:
+                    print("dfak3 not found")
+            else:
+                print("dfak2 not found")
+        else:
+            print("dfak1 not found")
+                      
+                
+    else:
+        print("error found")
+        
+    # dfak = dfa.find('div', class_ = 'tr-indent2')
+    
+    
+        
+          
+    # dfak1 = dfak.find('div', {'style': 'padding-top:1em; margin-top:1em'})
+        
+    #dfak2 = dfak1.find('div', class_ = 'tr-indent2')
+    #dfak3 = dfak2.find_all('td') 
+    
+    American_Indian_Number = "not reported"
+    American_Indian_percentage = "not reported"
+    Asian_Number = "not reported"
+    Asian_Percentage = "not reported"
+    Native_Hawaiian_or_Other_Pacific_Islander_Number = "not reported"
+    Native_Hawaiian_or_Other_Pacific_Islander_Percentage = "not reported"
+    Black_or_African_American_Number = "not reported"
+    Black_or_African_American_Percentage = "not reported"
+    More_than_one_race_Number = "not reported"
+    More_than_one_race_Percentage = "not reported"
+    Unknown_or_Not_Reported_Number = "not reported"
+    Unknown_or_Not_Reported_Percentage = "not reported"
+    White_Number = "Not reported"
+    White_Percentage = "Not reported"
+    
+    
+    
+    for i in range(len(dfak3)):
+        checking = dfak3[i].text.strip()
+        if checking == "American Indian or Alaska Native":
+            American_Indian_or_Alaska_Native = dfak3[i+1].text.strip().split()
+            if len( American_Indian_or_Alaska_Native) < 2:
+                pass
+            else:
+                American_Indian_percentage = American_Indian_or_Alaska_Native[1]
+                American_Indian_Number =  American_Indian_or_Alaska_Native[0]
+        if checking == "Asian":
+            Asian = dfak3[i+1].text.strip().split()
+            if len(Asian) < 2:
+                pass
+            else:
+                Asian_Number = Asian[0]
+                Asian_Percentage = Asian[1]
+        if checking == "Native Hawaiian or Other Pacific Islander":
+            Native_Hawaiian_or_Other_Pacific_Islander = dfak3[i+1].text.strip().split()
+            if len(Native_Hawaiian_or_Other_Pacific_Islander) < 2:
+                pass
+            else:
+                Native_Hawaiian_or_Other_Pacific_Islander_Number = Native_Hawaiian_or_Other_Pacific_Islander[0]
+                Native_Hawaiian_or_Other_Pacific_Islander_Percentage = Native_Hawaiian_or_Other_Pacific_Islander[1]
+        if checking == "Black or African American":
+            Black_or_African_American = dfak3[i+1].text.strip().split()
+            if len( Black_or_African_American) < 2:
+                pass
+            else:
+                Black_or_African_American_Number =  Black_or_African_American[0]
+                Black_or_African_American_Percentage =  Black_or_African_American[1]
+        if checking == "More than one race":
+            More_than_one_race = dfak3[i+1].text.strip().split()
+            if len(More_than_one_race) < 2:
+                pass
+            else:
+                More_than_one_race_Number = More_than_one_race[0]
+                More_than_one_race_Percentage = More_than_one_race[1]
+        if checking == "Unknown or Not Reported":
+            Unknown_or_Not_Reported = dfak3[i+1].text.strip().split()
+            if len(Unknown_or_Not_Reported) < 2:
+                pass
+            else:
+                Unknown_or_Not_Reported_Number = Unknown_or_Not_Reported[0]
+                Unknown_or_Not_Reported_Percentage = Unknown_or_Not_Reported[1]
+        if checking == "White":
+            White = dfak3[i+1].text.strip().split()
+            if len(White) < 2:
+                pass
+            else:
+                White_Number = White[0]
+                White_Percentage = White[1]
+        
+            
+
+ 
+    #Getting the link to the study location
+    link1 = soup.find("li", {"id": "full-text"})
+    link2 = link1.find(href = True).get("href")
+    link_location = "https://clinicaltrials.gov/" + link2
+    page = requests.get(link_location)
+    soup = BeautifulSoup(page.text, 'lxml')
+    
+    #Generating the location of the study 
+    location = soup.find('div', class_ = 'tr-table_cover')
+    if location is not None:
+        country_find = location.find('td', class_ = "ct-header3")
+        if country_find is not None:
+            country = country_find.text
+        else:
+            country = None
+        medicalFacility_find = location.find('td', {'headers': 'locName'})
+        if medicalFacility_find is not None:
+            medicalFacility = medicalFacility_find.text
+        else:
+            medicalFacility = None
+    else:
+        country = None
+        location = None
+        medicalFacility = None
+    #Going back to the initial url
+    initial_url = next_page
+    page = requests.get(initial_url)
+    soup = BeautifulSoup(page.text, 'lxml')
+    
+    #Updating the table
+    df = df.append({'Study Title': study_title, "American Indian or Alaska Native Number": American_Indian_Number, "American Indian or Alaska Native percentage": American_Indian_percentage, "Asian Number": Asian_Number, "Asian Percentage": Asian_Percentage, "Native Hawaiian or Other Pacific Islander Number": Native_Hawaiian_or_Other_Pacific_Islander_Number, "Native Hawaiian or Other Pacific Islander Percentage": Native_Hawaiian_or_Other_Pacific_Islander_Percentage, "Black or African American Number": Black_or_African_American_Number, "Black or African American Percentage": Black_or_African_American_Percentage, "More than one race Number": More_than_one_race_Number, "More than one race Percentage": More_than_one_race_Percentage, "White Number": White_Number, "White Percentage": White_Percentage, "Unknown or Not Reported Number": Unknown_or_Not_Reported_Number,  "Unknown or Not Reported Percentage": Unknown_or_Not_Reported_Percentage, 'Country': country, 'Medical Facility': medicalFacility}, ignore_index = True)
+    
+    #Moving to the next webpage
+    new_list = []
+    next_link = soup.find('div', class_ = "tr-results-nav")
+    count += 1
+    if next_link is not None:
+        for i in next_link:
+            new_list.append(i)
+            
+        the_link = new_list[5].get('href')
+        next_page = "https://clinicaltrials.gov" + the_link
+        url = next_page
+        #print(url)
+    
+    else:
+        print("error identified in the next link")
+        #creating manual link
+        url = "https://clinicaltrials.gov/ct2/show/results?rslt=With&draw=1&rank="+str(count)+"&view=results"
+
+
+    
+   
+    
+    initial = 5
+    final = 10
+    
+    for j in range(10000000000):
+        try:
+            # random_sleep_link = random.uniform(5, 15)
+            # time.sleep(random_sleep_link)    
+            page = requests.get(url)
+            soup = BeautifulSoup(page.text, "lxml")
+            continue_running = True
+        except requests.exceptions.HTTPError as errh:
+            random_sleep_except = random.uniform(initial, final)
+            time.sleep(random_sleep_except)
+            final += 10
+            print ("Http Error:",errh)
+            continue
+        except requests.exceptions.ConnectionError as errc:
+            random_sleep_except = random.uniform(initial, final)
+            time.sleep(random_sleep_except)
+            final += 10
+            print ("Error Connecting:",errc)
+            continue
+        except requests.exceptions.Timeout as errt:
+            random_sleep_except = random.uniform(initial, final)
+            time.sleep(random_sleep_except)
+            final += 10
+            print ("Timeout Error:",errt)
+            continue
+        except requests.exceptions.RequestException as err:
+            random_sleep_except = random.uniform(initial, final)
+            time.sleep(random_sleep_except)
+            final += 10
+            print ("OOps: Something Else",err)
+            continue_running = False
+            print("Error in the next link")
+            break
+            continue
+        except requests.exceptions.RequestException as e:
+            random_sleep_except = random.uniform(initial, final)
+            time.sleep(random_sleep_except)
+            final += 10
+            print(e)
+            continue
+        #Checking if it should continue working
+
+        else:
+            break
+        
+    else:
+        # pass
+        raise Exception("Something really went wrong here... I'm sorry.")
+   
+    
+    if continue_running == False:
+        break
+    # soup = BeautifulSoup(page.text, "lxml")
+        
+    
+
+# converting the data generated to  
+
+df.to_clipboard("C:/Users/Owner/Desktop/Try4")
