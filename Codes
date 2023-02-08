@@ -5,18 +5,18 @@ import random
 import time
 
 url = "https://clinicaltrials.gov/ct2/show/results/NCT05594173?rslt=With&draw=1&rank=1"
-next_page = "https://clinicaltrials.gov/ct2/show/results?rslt=With&draw=1&rank=2"
+next_page = "https://clinicaltrials.gov/ct2/show/results/NCT05594173?rslt=With&draw=1&rank=1"
 
 page = requests.get(url)
 
 soup = BeautifulSoup(page.text, "lxml")
 
 #Table
-df = pd.DataFrame({"Study Title": [""], "American Indian or Alaska Native Number": [""], "American Indian or Alaska Native percentage": [""], "Asian Number": [""], "Asian Percentage": [""], "Native Hawaiian or Other Pacific Islander Number": [""],"Native Hawaiian or Other Pacific Islander Percentage": [""], "Black or African American Number": [""],"Black or African American Percentage": [""], "More than one race Number": [""], "More than one race Percentage": [""], "White Number": [""], "White Percentage": [""], "Unknown or Not Reported Number": [""], "Unknown or Not Reported Percentage": [""], "Country":[""], "Medical Facility" : [""], "Study Link": [""]})
+df = pd.DataFrame({"Study Title": [""], "American Indian or Alaska Native Number": [""], "American Indian or Alaska Native percentage": [""], "Asian Number": [""], "Asian Percentage": [""], "Native Hawaiian or Other Pacific Islander Number": [""],"Native Hawaiian or Other Pacific Islander Percentage": [""], "Black or African American Number": [""],"Black or African American Percentage": [""], "More than one race Number": [""], "More than one race Percentage": [""], "White Number": [""], "White Percentage": [""], "Unknown or Not Reported Number": [""], "Unknown or Not Reported Percentage": [""], "Study Link": [""],"Location1":[""], "Location2" : [""], "Location3":[""], "Location4" : [""],"Location5":[""], "Location6" : [""], "Location7" : [""], "Location8" : [""], "Location9" : [""], "Location10" : [""]})
 
-count = 2
-#using loop to generate the data from the vaarious webpages 56684
-for i in range(56992):
+count = 1
+#using loop to generate the data from the vaarious webpages 56992
+for i in range(5):
     #Getting the study Title 
     title_find = soup.find("h1", class_ = "tr-h1 ct-sans-serif")
     if title_find is not None:
@@ -47,15 +47,7 @@ for i in range(56992):
     else:
         print("error found")
         
-    # dfak = dfa.find('div', class_ = 'tr-indent2')
-    
-    
-        
-          
-    # dfak1 = dfak.find('div', {'style': 'padding-top:1em; margin-top:1em'})
-        
-    #dfak2 = dfak1.find('div', class_ = 'tr-indent2')
-    #dfak3 = dfak2.find_all('td') 
+    #Creating Variables for the individual races
     
     American_Indian_Number = "not reported"
     American_Indian_percentage = "not reported"
@@ -73,7 +65,7 @@ for i in range(56992):
     White_Percentage = "Not reported"
     
     
-    
+    #Assigning a variable to the individual races
     for i in range(len(dfak3)):
         checking = dfak3[i].text.strip()
         if checking == "American Indian or Alaska Native":
@@ -137,22 +129,46 @@ for i in range(56992):
     soup = BeautifulSoup(page.text, 'lxml')
     
     #Generating the location of the study 
-    location = soup.find('div', class_ = 'tr-table_cover')
-    if location is not None:
-        country_find = location.find('td', class_ = "ct-header3")
-        if country_find is not None:
-            country = country_find.text
-        else:
-            country = None
-        medicalFacility_find = location.find('td', {'headers': 'locName'})
-        if medicalFacility_find is not None:
-            medicalFacility = medicalFacility_find.text
-        else:
-            medicalFacility = None
-    else:
-        country = None
-        location = None
-        medicalFacility = None
+    locations = []
+    location_tag1 = soup.find('div',class_ = 'tr-table_cover')
+    location_tag2 = location_tag1.find_all('tr')
+    for location_tag3 in location_tag2:
+         location_tag4 = location_tag3.find('td', {'style':'padding:0;padding-left:4em;'})
+         if location_tag4 is not None:
+             locations.append(location_tag4.text)
+    Location1 = "Not reported"
+    Location2 = "Not reported"
+    Location3 = "Not reported"
+    Location4 = "Not reported"
+    Location5 = "Not reported"
+    Location6 = "Not reported"
+    Location7 = "Not reported"
+    Location8 = "Not reported"
+    Location9 = "Not reported"
+    Location10 = "Not reported"
+    for i in range(len(locations)):
+        if i ==0:
+            Location1 = locations[0]
+        elif i==1:
+            Location2 = locations[1]
+        elif i==2:
+            Location3 = locations[2]
+        elif i==3:
+            Location4 = locations[3]
+        elif i==4:
+            Location5 = locations[4]
+        elif i==5:
+            Location6 = locations[5]
+        elif i==6:
+            Location7 = locations[6]
+        elif i==7:
+            Location8 = locations[7]
+        elif i==8:
+            Location9 = locations[8]
+        elif i==9:
+            Location10 = locations[9]
+    locations = []
+    
     #Going back to the initial url
     initial_url = next_page
     page = requests.get(initial_url)
@@ -163,7 +179,7 @@ for i in range(56992):
     
     #Updating the table
     
-    df_new_row = pd.DataFrame({'Study Title': [study_title], "American Indian or Alaska Native Number": [American_Indian_Number], "American Indian or Alaska Native percentage": [American_Indian_percentage], "Asian Number": [Asian_Number], "Asian Percentage": [Asian_Percentage], "Native Hawaiian or Other Pacific Islander Number": [Native_Hawaiian_or_Other_Pacific_Islander_Number], "Native Hawaiian or Other Pacific Islander Percentage": [Native_Hawaiian_or_Other_Pacific_Islander_Percentage], "Black or African American Number": [Black_or_African_American_Number], "Black or African American Percentage": [Black_or_African_American_Percentage], "More than one race Number": [More_than_one_race_Number], "More than one race Percentage": [More_than_one_race_Percentage], "White Number": [White_Number], "White Percentage": [White_Percentage], "Unknown or Not Reported Number": [Unknown_or_Not_Reported_Number],  "Unknown or Not Reported Percentage": [Unknown_or_Not_Reported_Percentage], 'Country': [country], 'Medical Facility': [medicalFacility], 'Study Link': [url]})
+    df_new_row = pd.DataFrame({'Study Title': [study_title], "American Indian or Alaska Native Number": [American_Indian_Number], "American Indian or Alaska Native percentage": [American_Indian_percentage], "Asian Number": [Asian_Number], "Asian Percentage": [Asian_Percentage], "Native Hawaiian or Other Pacific Islander Number": [Native_Hawaiian_or_Other_Pacific_Islander_Number], "Native Hawaiian or Other Pacific Islander Percentage": [Native_Hawaiian_or_Other_Pacific_Islander_Percentage], "Black or African American Number": [Black_or_African_American_Number], "Black or African American Percentage": [Black_or_African_American_Percentage], "More than one race Number": [More_than_one_race_Number], "More than one race Percentage": [More_than_one_race_Percentage], "White Number": [White_Number], "White Percentage": [White_Percentage], "Unknown or Not Reported Number": [Unknown_or_Not_Reported_Number],  "Unknown or Not Reported Percentage": [Unknown_or_Not_Reported_Percentage], 'Study Link': [url], 'Location1': [Location1], 'Location2': [Location2], 'Location3': [Location3], 'Location4': [Location4],'Location5': [Location5], 'Location6': [Location6],'Location7': [Location7],'Location8': [Location8],'Location9': [Location9],'Location10': [Location10]})
     df = pd.concat([df, df_new_row])
     #Moving to the next webpage
     new_list = []
@@ -176,7 +192,8 @@ for i in range(56992):
         the_link = new_list[5].get('href')
         next_page = "https://clinicaltrials.gov" + the_link
         url = next_page
-        #print(url)
+        # print(url)
+        #print(count)
     
     else:
         print("error identified in the next link")
@@ -250,4 +267,3 @@ for i in range(56992):
 
 #df.to_clipboard("C:/Users/adjei/OneDrive/Desktop/df.csv", index = False)
 df.to_csv("C:/Users/adjei/OneDrive/Desktop/df.csv", index = False)
-
